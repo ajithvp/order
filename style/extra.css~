@@ -1,0 +1,18 @@
+/* 
+    Document   : extra
+    Created on : 22 Mar, 2013, 10:34:55 AM
+    Author     : Ajith VP <ajith@ttransforme.com>
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+}
+.ui-icon-back{
+	width:70px;
+	height:25px;
+	background-image:url(../images/back.png);
+	background-repeat: no-repeat;
+	display: block;
+}
