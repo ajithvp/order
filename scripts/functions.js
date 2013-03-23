@@ -19,13 +19,13 @@ var tolerance = 25;
 $(window).bind('resize', function(){
     if((window.orientation === 0 || window.orientation === 180) &&
        ((window.innerHeight + tolerance) < portraitScreenHeight)){
-        // keyboard visible in portrait
+        $("[data-role=footer]").hide();
     }
     else if((window.innerHeight + tolerance) < landscapeScreenHeight){
-        // keyboard visible in landscape
+        $("[data-role=footer]").hide();
     }
     else{
-        // keyboard NOT visible
+       $("[data-role=footer]").show();
     }
 });
 });

@@ -2,19 +2,30 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+$(document).on('pageinit', '#home',  function(){
+ var portraitScreenHeight;
+var landscapeScreenHeight;
 
- var that = this;
-    $(':input').blur(function(){
-        that.onFocusLoss();
-    });
-
-onFocusLoss : function() {
-    try {
-        $("[data-position='fixed']").fixedtoolbar();
-        $("[data-position='fixed']").fixedtoolbar('destroy');
-        $("[data-position='fixed']").fixedtoolbar();
-        console.log('bam');
-    } catch(e) {
-        console.log(e);
-    }
+if(window.orientation === 0 || window.orientation === 180){
+    potraitScreenHeight = $(window).height();
+    landscapeScreenHeight = $(window).width();
 }
+else{
+    portraitScreenHeight = $(window).width();
+    landscapeScreenHeight = $(window).height();
+}
+
+var tolerance = 25;
+$(window).bind('resize', function(){
+    if((window.orientation === 0 || window.orientation === 180) &&
+       ((window.innerHeight + tolerance) < portraitScreenHeight)){
+        // keyboard visible in portrait
+    }
+    else if((window.innerHeight + tolerance) < landscapeScreenHeight){
+        // keyboard visible in landscape
+    }
+    else{
+        // keyboard NOT visible
+    }
+});
+});
