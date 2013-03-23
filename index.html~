@@ -221,6 +221,14 @@
 						<label><a href="http://www.topperseducation.com">http://www.topperseducation.com</a></label>
 					</div>	
 				</fieldset>
+				<fieldset class="ui-grid-a">
+					<div class="ui-block-a">
+						<input type="button" id = "btnLogin" value ="Login" />
+					</div>
+					<div class="ui-block-b">
+						<input type="button" id = "btnReset" value ="Reset" />
+					</div>	   
+				</fieldset>
             <div data-role="footer" id="footer" data-theme="c" data-position="fixed">
 				<div class="ui-navbar" >
 					<ul class='ui-grid-d'>
