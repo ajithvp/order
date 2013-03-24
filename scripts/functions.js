@@ -2,7 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+ $(document).on('pageshow','#home',function(){
+	$(window).bind('resize', function(){
+		$("#searchResults").height($(window).height() - $("#searchResults").offset().top - $("#footer").height()-17);
+ 	});
+ });
+ 
 $(document).on('pageinit', '#home',  function(){
+
  	var portraitScreenHeight;
 	var landscapeScreenHeight;
 
@@ -14,7 +21,7 @@ $(document).on('pageinit', '#home',  function(){
     	portraitScreenHeight = $(window).width();
     	landscapeScreenHeight = $(window).height();
 	}
-
+	
 	var tolerance = 25;
 	$(window).bind('resize', function(){
 	    if((window.orientation === 0 || window.orientation === 180) &&
