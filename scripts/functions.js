@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-$(document).on('pageinit','#home'  function(){
+$(document).on('pageinit', '#home',  function(){
  	var portraitScreenHeight;
 	var landscapeScreenHeight;
 
@@ -29,19 +29,18 @@ $(document).on('pageinit','#home'  function(){
 	    }
 	});
 	$(".ui-collapsible").bind('click',collapse);
-	alert("dd");
 });
 
 function collapse(){
 	if($(this).hasClass('ui-collapsible-collapsed')){
 		$(this).removeClass('ui-collapsible-collapsed');
-		$(this).children("span.ui-icon").removeClass("ui-icon-plus");
-		$(this).children("span.ui-icon").addClass("ui-icon-minus");
+		$(this).find("span.ui-icon").removeClass("ui-icon-plus");
+		$(this).find("span.ui-icon").addClass("ui-icon-minus");
 		$(this).children("div.ui-collapsible-content").removeClass("ui-collapsible-content-collapsed");
 	}else{
 		$(this).addClass('ui-collapsible-collapsed');
-		$(this).children("span.ui-icon").removeClass("ui-icon-minus");
-		$(this).children("span.ui-icon").addClass("ui-icon-plus");
+		$(this).find("span.ui-icon").removeClass("ui-icon-minus");
+		$(this).find("span.ui-icon").addClass("ui-icon-plus");
 		$(this).children("div.ui-collapsible-content").addClass("ui-collapsible-content-collapsed");
 	}
 	

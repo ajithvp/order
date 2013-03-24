@@ -19,3 +19,4 @@ root {
 .bar{
 	padding:2px 10px;
 }
+.ui-listview li:last-child > div { border-bottom:1px solid #9FC5E7; }
