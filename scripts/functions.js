@@ -2,15 +2,37 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-$(document).on('pageshow', '#home', function() {
-    $(window).bind('resize', function() {
-        $("#searchResults").height($(window).height() - $("#searchResults").offset().top - $("#footer").height() - 17);
+$(document).on('pageshow', '#saleOrderSelectCustomer', function() {
+    //onPageShow();
+});
+$(document).on('pageshow', '#saleOrderEntry', function() {
+    //onPageShow();
+});
+
+
+$(document).on('pageinit', '#saleOrderSelectCustomer', function() {
+    onResize();
+    $(window).bind('resize', onResize);
+    
+    $(".ui-collapsible").bind('click', collapse);
+    $(".home").bind("click",{page:"saleOrderSelectCustomer"},navigate);
+    $(".customer").bind("click",{page:"saleOrderEntry"},navigate);
+    $(".addproduct").bind("click",{page:"enterProducts",transition:"pop"},navigate);
+    $(".item").bind("click",{page:"enterProducts",transition:"pop"},navigate);
+    $(".closebutton").bind("click",{page:"saleOrderSelectCustomer"},navigate);
+    $("#btnFinish").bind("click",{page:"saleOrderEntry"},navigate);
+    $("#btnSave").bind("click",{page:"savedOrder"},navigate);
+    $("#btnNextOrder").bind("click",{page:"saleOrderSelectCustomer"},navigate);
+    $(".orders").bind("click",{page:"saleOrders"},navigate);
+    $("#btnExit").bind("click",function(e){
+    	e.preventDefault();
+        navigator.app.exitApp();
     });
 });
 
-$(document).on('pageinit', '#home', function() {
-
-    var portraitScreenHeight;
+function onResize(){
+	var tolerance = 25;
+	var portraitScreenHeight;
     var landscapeScreenHeight;
 
     if (window.orientation === 0 || window.orientation === 180) {
@@ -21,22 +43,32 @@ $(document).on('pageinit', '#home', function() {
         portraitScreenHeight = $(window).width();
         landscapeScreenHeight = $(window).height();
     }
+	if ((window.orientation === 0 || window.orientation === 180) && ((window.innerHeight + tolerance) < portraitScreenHeight)) {
+    	$("[data-role=footer]").hide();
+    }
+    else if ((window.innerHeight + tolerance) < landscapeScreenHeight) {
+    	$("[data-role=footer]").hide();
+    }
+    else {
+    	$("[data-role=footer]").show();
+    }
+    $("#searchResults").height($(window).height() - $("#searchResults").offset().top - $("#footer").height() - 17);
+    $(".ui-link-inherit").width($(window).width() - 100);
+}
 
-    var tolerance = 25;
-    $(window).bind('resize', function() {
-        if ((window.orientation === 0 || window.orientation === 180) &&
-                ((window.innerHeight + tolerance) < portraitScreenHeight)) {
-            $("[data-role=footer]").hide();
-        }
-        else if ((window.innerHeight + tolerance) < landscapeScreenHeight) {
-            $("[data-role=footer]").hide();
-        }
-        else {
-            $("[data-role=footer]").show();
-        }
+function navigate(params){
+	
+	var transition = (params.data.transition==undefined) ? "slide" : params.data.transition;
+	var hash = (params.data.hash==undefined) ? false : params.data.hash;
+	var reverse = (params.data.reverse==undefined) ? false : params.data.reverse;
+	
+	$.mobile.changePage( "#"+params.data.page, {
+		transition: transition,
+        changeHash: hash,
+        reverse:reverse
     });
-    $(".ui-collapsible").bind('click', collapse);
-});
+    return false;    
+}
 
 function collapse() {
     if ($(this).hasClass('ui-collapsible-collapsed')) {
