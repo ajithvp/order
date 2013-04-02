@@ -19,6 +19,7 @@ document.addEventListener("backbutton", function (e) {
 }, false);
 
 document.addEventListener('deviceready', function (e) {
+	alert("deviceready")
 	$("#btnExit").bind("click",function(e){
     	alert("cc");
     	e.preventDefault();
@@ -40,7 +41,7 @@ document.addEventListener('deviceready', function (e) {
 $(document).on('pageinit', '#saleOrderSelectCustomer', function() {
     onResize();
     $(window).bind('resize', onResize);
-    
+    alert("pageinit")
     $(".ui-collapsible").bind('click', collapse);
     $(".home").unbind('click',navigate);
     $(".home").bind("click",{page:"saleOrderSelectCustomer"},navigate);
