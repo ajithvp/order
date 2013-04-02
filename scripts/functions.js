@@ -19,21 +19,7 @@ document.addEventListener("backbutton", function (e) {
 }, false);
 
 document.addEventListener('deviceready', function (e) {
-	$("#btnExit").bind("click",function(e){
-    	alert("cc");
-    	e.preventDefault();
-    	alert("ff");
-    	try{
- 	       navigator.app.exitApp();
-        }catch(ex){
-        	alert(ex);
-        }
-        try{
- 	       navigator.device.exitApp();
-        }catch(ex){
-        	alert(ex);
-        }
-    });
+	alert("dd");
 }, false);
 
 
@@ -51,7 +37,7 @@ $(document).on('pageinit', '#saleOrderSelectCustomer', function() {
     $("#btnFinish").bind("click",{page:"saleOrderEntry"},navigate);
     $("#btnSave").bind("click",{page:"savedOrder"},navigate);
     $("#btnNextOrder").bind("click",{page:"saleOrderSelectCustomer"},navigate);
-    $(".orders").live("click",{page:"saleOrders"},navigate);
+    $(".orders").bind("click",{page:"saleOrders"},navigate);
     
 });
 
