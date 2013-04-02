@@ -9,6 +9,15 @@ $(document).on('pageshow', '#saleOrderEntry', function() {
     //onPageShow();
 });
 
+document.addEventListener("backbutton", function (e) {
+    if ($.mobile.activePage.is('#saleOrderSelectCustomer')) {
+        e.preventDefault();
+        navigator.app.exitApp();
+    } else {
+        navigator.app.backHistory()
+    }
+}, false);
+
 
 $(document).on('pageinit', '#saleOrderSelectCustomer', function() {
     onResize();
@@ -25,8 +34,14 @@ $(document).on('pageinit', '#saleOrderSelectCustomer', function() {
     $("#btnNextOrder").bind("click",{page:"saleOrderSelectCustomer"},navigate);
     $(".orders").bind("click",{page:"saleOrders"},navigate);
     $("#btnExit").bind("click",function(e){
+    	alert("cc");
     	e.preventDefault();
-        navigator.app.exitApp();
+    	alert("ff");
+    	try{
+ 	       navigator.app.exitApp();
+        }catch(ex){
+        	alert(ex);
+        }
     });
 });
 
