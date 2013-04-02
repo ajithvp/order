@@ -18,22 +18,8 @@ document.addEventListener("backbutton", function (e) {
     }
 }, false);
 
-
-$(document).on('pageinit', '#saleOrderSelectCustomer', function() {
-    onResize();
-    $(window).bind('resize', onResize);
-    
-    $(".ui-collapsible").bind('click', collapse);
-    $(".home").bind("click",{page:"saleOrderSelectCustomer"},navigate);
-    $(".customer").bind("click",{page:"saleOrderEntry"},navigate);
-    $(".addproduct").bind("click",{page:"enterProducts",transition:"pop"},navigate);
-    $(".item").bind("click",{page:"enterProducts",transition:"pop"},navigate);
-    $(".closebutton").bind("click",{page:"saleOrderSelectCustomer"},navigate);
-    $("#btnFinish").bind("click",{page:"saleOrderEntry"},navigate);
-    $("#btnSave").bind("click",{page:"savedOrder"},navigate);
-    $("#btnNextOrder").bind("click",{page:"saleOrderSelectCustomer"},navigate);
-    $(".orders").bind("click",{page:"saleOrders"},navigate);
-    $("#btnExit").bind("click",function(e){
+document.addEventListener('deviceready', function (e) {
+	$("#btnExit").bind("click",function(e){
     	alert("cc");
     	e.preventDefault();
     	alert("ff");
@@ -42,7 +28,31 @@ $(document).on('pageinit', '#saleOrderSelectCustomer', function() {
         }catch(ex){
         	alert(ex);
         }
+        try{
+ 	       navigator.device.exitApp();
+        }catch(ex){
+        	alert(ex);
+        }
     });
+}, false);
+
+
+$(document).on('pageinit', '#saleOrderSelectCustomer', function() {
+    onResize();
+    $(window).bind('resize', onResize);
+    
+    $(".ui-collapsible").bind('click', collapse);
+    $(".home").unbind('click',navigate);
+    $(".home").bind("click",{page:"saleOrderSelectCustomer"},navigate);
+    $(".customer").bind("click",{page:"saleOrderEntry"},navigate);
+    $(".addproduct").bind("click",{page:"enterProducts",transition:"pop"},navigate);
+    $(".item").bind("click",{page:"enterProducts",transition:"pop"},navigate);
+    $(".closebutton").bind("click",{page:"saleOrderSelectCustomer"},navigate);
+    $("#btnFinish").bind("click",{page:"saleOrderEntry"},navigate);
+    $("#btnSave").bind("click",{page:"savedOrder"},navigate);
+    $("#btnNextOrder").bind("click",{page:"saleOrderSelectCustomer"},navigate);
+    $(".orders").live("click",{page:"saleOrders"},navigate);
+    
 });
 
 function onResize(){
