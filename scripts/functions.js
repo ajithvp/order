@@ -42,16 +42,36 @@ $(document).on('pageinit', '#saleOrderSelectCustomer', function() {
     onResize();
     $(window).bind('resize', onResize);
     alert("pageinit")
+    
+    
+    $(".ui-collapsible").unbind('click', collapse);
     $(".ui-collapsible").bind('click', collapse);
+        
     $(".home").unbind('click',navigate);
     $(".home").bind("click",{page:"saleOrderSelectCustomer"},navigate);
+    
+    $(".customer").unbind('click',navigate);
     $(".customer").bind("click",{page:"saleOrderEntry"},navigate);
+    
+    $(".addproduct").unbind('click',navigate);
     $(".addproduct").bind("click",{page:"enterProducts",transition:"pop"},navigate);
+    
+    $(".item").unbind('click',navigate);
     $(".item").bind("click",{page:"enterProducts",transition:"pop"},navigate);
+    
+    $(".closebutton").unbind('click',navigate);
     $(".closebutton").bind("click",{page:"saleOrderSelectCustomer"},navigate);
+    
+    $("#btnFinish").unbind('click',navigate);
     $("#btnFinish").bind("click",{page:"saleOrderEntry"},navigate);
+    
+    $("#btnSave").unbind('click',navigate);
     $("#btnSave").bind("click",{page:"savedOrder"},navigate);
+    
+    $("#btnNextOrder").unbind('click',navigate);
     $("#btnNextOrder").bind("click",{page:"saleOrderSelectCustomer"},navigate);
+    
+    $(".orders").unbind('click',navigate);
     $(".orders").bind("click",{page:"saleOrders"},navigate);
     
 });
@@ -86,7 +106,7 @@ function navigate(params){
 	
 	var transition = (params.data.transition==undefined) ? "slide" : params.data.transition;
 	var hash = (params.data.hash==undefined) ? false : params.data.hash;
-	var reverse = (params.data.reverse==undefined) ? false : params.data.reverse;
+	var reverse = (params.data.reverse==undefined) ? true : params.data.reverse;
 	
 	$.mobile.changePage( "#"+params.data.page, {
 		transition: transition,
