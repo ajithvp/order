@@ -19,7 +19,21 @@ document.addEventListener("backbutton", function (e) {
 }, false);
 
 document.addEventListener('deviceready', function (e) {
-	alert("dd");
+	$("#btnExit").bind("click",function(e){
+    	alert("cc");
+    	e.preventDefault();
+    	alert("ff");
+    	try{
+ 	       navigator.app.exitApp();
+        }catch(ex){
+        	alert(ex);
+        }
+        try{
+ 	       navigator.device.exitApp();
+        }catch(ex){
+        	alert(ex);
+        }
+    });
 }, false);
 
 
