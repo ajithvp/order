@@ -26,9 +26,9 @@ $(document).on('pageinit', '#saleOrderSelectCustomer', function() {
     $(window).bind('resize', onResize);    
     
     $(".ui-collapsible").off('click', collapse).on('click', collapse);        
-    $(".home").off('tap', collapse).on("click",{page:"saleOrderSelectCustomer"},navigate);
+    $(".home").off('tap', collapse).on("tap",{page:"saleOrderSelectCustomer"},navigate);
     $(".customer").off('click', collapse).on("click",{page:"saleOrderEntry"},navigate);    
-    $(".addproduct").off('mousedown', collapse).on("click",{page:"enterProducts",transition:"pop"},navigate);
+    $(".addproduct").off('mousedown', collapse).on("mousedown",{page:"enterProducts",transition:"pop"},navigate);
     $(".item").off('click', collapse).on("click",{page:"enterProducts",transition:"pop"},navigate);
     $(".closebutton").off('click', collapse).on("click",{page:"saleOrderSelectCustomer"},navigate);
     $("#btnFinish").off('click', collapse).on("click",{page:"saleOrderEntry"},navigate);
@@ -65,19 +65,19 @@ function onResize(){
 }
 
 function navigate(event){
-	alert("in");
+	alert("pro"+event.stopPropagation());
+	alert("tar"+event.target);
+	alert("data"+JSON.stringify());
+	alert("res"_event.result);
 	event.preventDefault();
-	alert("prevent");
 	var transition = (event.data.transition==undefined) ? "slide" : event.data.transition;
 	var hash = (event.data.hash==undefined) ? false : event.data.hash;
 	var reverse = (event.data.reverse==undefined) ? true : event.data.reverse;
-	alert("trigger");
 	$.mobile.changePage( "#"+event.data.page, {
 		transition: transition,
         changeHash: hash,
         reverse:reverse
     });
-    alert("after trigger");
     return false;    
 }
 
