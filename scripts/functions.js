@@ -72,14 +72,14 @@ function navigate(event){
 	var reverse = (event.data.reverse==undefined) ? true : event.data.reverse;
 	setTimeout(function (){
 
-             //something you want delayed
-
-         }, 5000);
-		$.mobile.changePage( "#"+event.data.page, {
+             $.mobile.changePage( "#"+event.data.page, {
 			transition: transition,
         	changeHash: hash,
         	reverse:reverse
     	});
+
+         }, 5000);
+		
 	
     return false;
 }
