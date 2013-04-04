@@ -65,20 +65,21 @@ function onResize(){
 }
 
 function navigate(event){
-	alert("pro"+event.stopPropagation());
-	alert("tar"+event.target);
-	alert("data"+JSON.stringify());
-	alert("res"+event.result);
-	event.preventDefault();
+	 event.stopPropagation();
+        event.preventDefault();
 	var transition = (event.data.transition==undefined) ? "slide" : event.data.transition;
 	var hash = (event.data.hash==undefined) ? false : event.data.hash;
 	var reverse = (event.data.reverse==undefined) ? true : event.data.reverse;
-	$.mobile.changePage( "#"+event.data.page, {
-		transition: transition,
-        changeHash: hash,
-        reverse:reverse
-    });
-    return false;    
+	alert("dd");
+    $( document ).one( "pagechange", function() {
+    alert("dd1");
+		$.mobile.changePage( "#"+event.data.page, {
+			transition: transition,
+        	changeHash: hash,
+        	reverse:reverse
+    	});
+	});
+    return false;
 }
 
 function collapse() {
