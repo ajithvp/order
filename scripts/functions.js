@@ -26,15 +26,16 @@ $(document).on('pageinit', '#saleOrderSelectCustomer', function() {
     $(window).bind('resize', onResize);    
     
     $(".ui-collapsible").off('click', collapse).on('click', collapse);        
-    $(".home").off('tap', collapse).on("tap",{page:"saleOrderSelectCustomer"},navigate);
-    $(".customer").off('click', collapse).on("click",{page:"saleOrderEntry"},navigate);    
-    $(".addproduct").off('mousedown', collapse).on("mousedown",{page:"enterProducts",transition:"pop"},navigate);
-    $(".item").off('click', collapse).on("click",{page:"enterProducts",transition:"pop"},navigate);
-    $(".closebutton").off('click', collapse).on("click",{page:"saleOrderSelectCustomer"},navigate);
-    $("#btnFinish").off('click', collapse).on("click",{page:"saleOrderEntry"},navigate);
-    $("#btnSave").off('click', collapse).on("click",{page:"savedOrder"},navigate);
-    $("#btnNextOrder").off('click', collapse).on("click",{page:"saleOrderSelectCustomer"},navigate);
-    $(".orders").off('click', collapse).on("click",{page:"saleOrders"},navigate);
+    $(".home").off('tap', collapse).on("tap",{page:"#saleOrderSelectCustomer"},navigate);
+    $(".customer").off('click', collapse).on("click",{page:"#saleOrderEntry"},navigate);    
+    $(".addproduct").off('mousedown', collapse).on("mousedown",{page:"#enterProducts",transition:"pop"},navigate);
+    $(".item").off('click', collapse).on("click",{page:"#enterProducts",transition:"pop"},navigate);
+    $(".closebutton").off('click', collapse).on("click",{page:"#saleOrderSelectCustomer"},navigate);
+    $("#btnFinish").off('click', collapse).on("click",{page:"#saleOrderEntry"},navigate);
+    $("#btnSave").off('click', collapse).on("click",{page:"#savedOrder"},navigate);
+    $("#btnNextOrder").off('click', collapse).on("click",{page:"#saleOrderSelectCustomer"},navigate);
+    $(".orders").off('click', collapse).on("click",{page:"#saleOrders"},navigate);
+    $(".logout").off('click', collapse).on("click",{page:"login.html"},navigate);
     
 });
 
@@ -70,15 +71,14 @@ function navigate(event){
 	var transition = (event.data.transition==undefined) ? "slide" : event.data.transition;
 	var hash = (event.data.hash==undefined) ? false : event.data.hash;
 	var reverse = (event.data.reverse==undefined) ? true : event.data.reverse;
-	setTimeout(function (){
+	
 
-             $.mobile.changePage( "#"+event.data.page, {
+             $.mobile.changePage( event.data.page, {
 			transition: transition,
         	changeHash: hash,
         	reverse:reverse
     	});
 
-         }, 5000);
 		
 	
     return false;
