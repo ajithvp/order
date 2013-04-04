@@ -70,15 +70,17 @@ function navigate(event){
 	var transition = (event.data.transition==undefined) ? "slide" : event.data.transition;
 	var hash = (event.data.hash==undefined) ? false : event.data.hash;
 	var reverse = (event.data.reverse==undefined) ? true : event.data.reverse;
-	alert("dd");
-    $( document ).one( "pagechange", function() {
-    alert("dd1");
+	setTimeout(function (){
+
+             //something you want delayed
+
+         }, 5000);
 		$.mobile.changePage( "#"+event.data.page, {
 			transition: transition,
         	changeHash: hash,
         	reverse:reverse
     	});
-	});
+	
     return false;
 }
 
