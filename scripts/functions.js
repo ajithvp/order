@@ -2,11 +2,28 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-$(document).on('pageshow', '#saleOrderSelectCustomer', function() {
-    //onPageShow();
-});
-$(document).on('pageshow', '#saleOrderEntry', function() {
-    //onPageShow();
+$(document).delegate('#saleOrderSelectCustomer','pageinit', function() {
+	
+}).delegate('#saleOrderSelectCustomer','pageshow',  function() {
+    onResize();
+    $(window).off('resize').on('resize', onResize);    
+    bindEvents();
+}).delegate('#saleOrderEntry','pageshow',  function() {
+    onResize();
+    $(window).off('resize').on('resize', onResize);    
+    bindEvents();
+}).delegate('#saleOrders','pageshow',  function() {
+    onResize();
+    $(window).off('resize').on('resize', onResize);    
+    bindEvents();
+}).delegate('#login', 'pageshow',  function() {
+    onResize();
+    $(window).off('resize').on('resize', onResize);    
+    bindEvents();
+}).delegate('#savedOrder','pageshow',  function() {
+    onResize();
+    $(window).off('resize').on('resize', onResize);    
+    bindEvents();
 });
 
 document.addEventListener("backbutton", function (e) {
@@ -21,23 +38,52 @@ document.addEventListener("backbutton", function (e) {
 document.addEventListener('deviceready', function (e) {}, false);
 
 
-$(document).on('pageinit', '#saleOrderSelectCustomer', function() {
-    onResize();
-    $(window).bind('resize', onResize);    
+function bindEvents(){
+
+	$(".ui-collapsible").off('tap', collapse).on('tap', collapse);  
+	
+	$("#l1").unbind("tap", navigate);
+    $("#l1").bind("tap",{page:"login.html"},navigate);
     
-    $(".ui-collapsible").off('click', collapse).on('click', collapse);        
-    $(".home").off('tap', collapse).on("tap",{page:"#saleOrderSelectCustomer"},navigate);
-    $(".customer").off('click', collapse).on("click",{page:"#saleOrderEntry"},navigate);    
-    $(".addproduct").off('mousedown', collapse).on("mousedown",{page:"#enterProducts",transition:"pop"},navigate);
-    $(".item").off('click', collapse).on("click",{page:"#enterProducts",transition:"pop"},navigate);
-    $(".closebutton").off('click', collapse).on("click",{page:"#saleOrderSelectCustomer"},navigate);
-    $("#btnFinish").off('click', collapse).on("click",{page:"#saleOrderEntry"},navigate);
-    $("#btnSave").off('click', collapse).on("click",{page:"#savedOrder"},navigate);
-    $("#btnNextOrder").off('click', collapse).on("click",{page:"#saleOrderSelectCustomer"},navigate);
-    $(".orders").off('click', collapse).on("click",{page:"#saleOrders"},navigate);
-    $(".logout").off('click', collapse).on("click",{page:"login.html"},navigate);
+    $("#l2").unbind("tap", navigate);
+    $("#l2").bind("tap",{page:"login.html"},navigate);
     
-});
+    $("#l3").unbind("tap", navigate);
+    $("#l3").bind("tap",{page:"login.html"},navigate);
+    $("#l4").unbind("tap", navigate);
+    $("#l4").bind("tap",{page:"login.html"},navigate);
+    
+    
+	$(".home").unbind("tap");      
+    $(".home").bind("tap",{page:"index.html"},navigate);
+    
+    $(".customer").unbind('tap', navigate);
+    $(".customer").bind("tap",{page:"saleorderentry.html"},navigate);    
+    
+    $(".addproduct").unbind('tap', navigate);
+    $(".addproduct").bind("tap",{page:"#enterProducts",transition:"pop"},navigate);
+    
+    $(".item").unbind('tap', navigate);
+    $(".item").bind("tap",{page:"#enterProducts",transition:"pop"},navigate);
+    
+    $(".closebutton").unbind('tap', navigate);
+    $(".closebutton").bind("tap",{page:"index.html"},navigate);
+    
+    $("#btnFinish").unbind('tap', navigate);
+    $("#btnFinish").bind("tap",{page:"saleorderentry.html"},navigate);
+    
+    $("#btnSave").unbind('tap', navigate);
+    $("#btnSave").bind("tap",{page:"savedorder.html"},navigate);
+    
+    $("#btnNextOrder").unbind('tap', navigate);
+    $("#btnNextOrder").bind("tap",{page:"index.html"},navigate);
+    
+    $(".orders").unbind('tap', navigate);
+    $(".orders").bind("tap",{page:"saleorders.html"},navigate);
+        
+    
+}
+
 
 function onResize(){
 	var tolerance = 25;
@@ -66,21 +112,16 @@ function onResize(){
 }
 
 function navigate(event){
-	 event.stopPropagation();
-        event.preventDefault();
+	alert(event.data.page);
+    event.preventDefault();
 	var transition = (event.data.transition==undefined) ? "slide" : event.data.transition;
 	var hash = (event.data.hash==undefined) ? false : event.data.hash;
 	var reverse = (event.data.reverse==undefined) ? true : event.data.reverse;
-	
-
-             $.mobile.changePage( event.data.page, {
-			transition: transition,
-        	changeHash: hash,
-        	reverse:reverse
-    	});
-
-		
-	
+    $.mobile.changePage( event.data.page, {
+		transition: transition,
+       	changeHash: hash,
+       	reverse:reverse
+    });
     return false;
 }
 
