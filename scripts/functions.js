@@ -42,17 +42,8 @@ function bindEvents(){
 
 	$(".ui-collapsible").off('tap', collapse).on('tap', collapse);  
 	
-	$("#l1").unbind("tap", navigate);
-    $("#l1").bind("tap",{page:"login.html"},navigate);
-    
-    $("#l2").unbind("tap", navigate);
-    $("#l2").bind("tap",{page:"login.html"},navigate);
-    
-    $("#l3").unbind("tap", navigate);
-    $("#l3").bind("tap",{page:"login.html"},navigate);
-    $("#l4").unbind("tap", navigate);
-    $("#l4").bind("tap",{page:"login.html"},navigate);
-    
+	$(".logout").unbind("click", navigate);
+    $(".logout").bind("tap",{page:"login.html"},navigate);
     
 	$(".home").unbind("tap");      
     $(".home").bind("tap",{page:"index.html"},navigate);
@@ -112,7 +103,6 @@ function onResize(){
 }
 
 function navigate(event){
-	alert(event.data.page);
     event.preventDefault();
 	var transition = (event.data.transition==undefined) ? "slide" : event.data.transition;
 	var hash = (event.data.hash==undefined) ? false : event.data.hash;
