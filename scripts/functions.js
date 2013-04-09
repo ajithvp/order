@@ -51,8 +51,16 @@ function bindEvents(){
     $(".customer").unbind('tap', navigate);
     $(".customer").bind("tap",{page:"saleorderentry.html"},navigate);    
     
-    $(".addproduct").unbind('tap', navigate);
-    $(".addproduct").bind("tap",{page:"#enterProducts",transition:"pop"},navigate);
+    //$(".addproduct").unbind('tap', navigate);
+    $(".addproduct").bind("tap",function(){
+    	alert("dd");
+    	try{
+    	alert("d");
+    	$("enterproducts.html").popup('open');
+    	}catch(e){
+    		alert(e);
+    	}
+    });
     
     $(".item").unbind('tap', navigate);
     $(".item").bind("tap",{page:"#enterProducts",transition:"pop"},navigate);
@@ -103,6 +111,7 @@ function onResize(){
 }
 
 function navigate(event){
+	$.mobile.showPageLoadingMsg();
     event.preventDefault();
 	var transition = (event.data.transition==undefined) ? "slide" : event.data.transition;
 	var hash = (event.data.hash==undefined) ? false : event.data.hash;
@@ -112,6 +121,7 @@ function navigate(event){
        	changeHash: hash,
        	reverse:reverse
     });
+    $.mobile.hidePageLoadingMsg();
     return false;
 }
 
