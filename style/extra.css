@@ -28,7 +28,3 @@ root {
 	overflow-x:hidden;
 	height:100%;
 }
-
-.ui-page {
--webkit-backface-visibility: hidden;
-}
