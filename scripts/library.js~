@@ -38,11 +38,14 @@ var Store = {
     },
     clearAll: function() {
         var strLength = this.appName.length;
-        var appName = this.appName;
+        var str = this.appName;
     	Object.keys(localStorage) 
         	.forEach(function(key){ 
-        	    if (key.substring(0,strLength) == appName) 
+        		alert(key.substring(0,strLength) + str);
+        	    if (key.substring(0,strLength) == str) {
+        	    alert(key);
         	        localStorage.removeItem(key); 
+        	    } 
         	}); 
     },
     isSet: function(name) {

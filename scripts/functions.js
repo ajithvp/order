@@ -3,27 +3,6 @@
  * and open the template in the editor.
  */
 $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
-   	if(window.localStorage["b"] !== undefined){
-    	$.mobile.changePage("#saleOrderSelectCustomer", {
-    		transition: "slide",
-    		changeHash: false,
-    		reverse: true
-    	});
-    	return false;
-    }
-    else{
-    	window.localStorage["b"] = "d";
-    	$.mobile.changePage("#login", {
-    		transition: "slide",
-    		changeHash: false,
-    		reverse: false
-    	});
-    	return false;
-    }
-    
-    onResize();
-    $(window).off('resize').on('resize', onResize);
-    bindEvents();
 
 }).delegate('#saleOrderSelectCustomer', 'pageshow', function() {
     onResize();
@@ -48,7 +27,6 @@ $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
 });
 
 document.addEventListener("backbutton", function(e) {
-	alert("back button");
     if ($.mobile.activePage.is('#saleOrderSelectCustomer')) {
         e.preventDefault();
         navigator.app.exitApp();
@@ -66,13 +44,13 @@ function bindEvents() {
     $(".ui-collapsible").off('tap', collapse).on('tap', collapse);
 
     $(".logout").unbind("click", navigate);
-    $(".logout").bind("tap", {page: "#login",hash:false,reverse:false}, navigate);
+    $(".logout").bind("tap", {page: "login.html"}, navigate);
 
     $(".home").unbind("tap");
-    $(".home").bind("tap", {page: "#saleOrderSelectCustomer"}, navigate);
+    $(".home").bind("tap", {page: "index.html"}, navigate);
 
     $(".customer").unbind('tap', navigate);
-    $(".customer").bind("tap", {page: "#saleOrderEntry"}, navigate);
+    $(".customer").bind("tap", {page: "saleorderentry.html"}, navigate);
 
     //$(".addproduct").unbind('tap', navigate);
     $(".addproduct").bind("tap", function() {
@@ -89,19 +67,19 @@ function bindEvents() {
     $(".item").bind("tap", {page: "#enterProducts", transition: "pop"}, navigate);
 
     $(".closebutton").unbind('tap', navigate);
-    $(".closebutton").bind("tap", {page: "#saleOrderSelectCustomer"}, navigate);
+    $(".closebutton").bind("tap", {page: "index.html"}, navigate);
 
     $("#btnFinish").unbind('tap', navigate);
-    $("#btnFinish").bind("tap", {page: "#saleOrderEntry"}, navigate);
+    $("#btnFinish").bind("tap", {page: "saleorderentry.html"}, navigate);
 
     $("#btnSave").unbind('tap', navigate);
-    $("#btnSave").bind("tap", {page: "#savedOrder"}, navigate);
+    $("#btnSave").bind("tap", {page: "savedorder.html"}, navigate);
 
     $("#btnNextOrder").unbind('tap', navigate);
-    $("#btnNextOrder").bind("tap", {page: "#saleOrderSelectCustomer"}, navigate);
+    $("#btnNextOrder").bind("tap", {page: "index.html"}, navigate);
 
     $(".orders").unbind('tap', navigate);
-    $(".orders").bind("tap", {page: "#saleOrders"}, navigate);
+    $(".orders").bind("tap", {page: "saleorders.html"}, navigate);
 
 
 }
@@ -137,7 +115,7 @@ function navigate(event) {
     $.mobile.showPageLoadingMsg();
     event.preventDefault();
     var transition = (event.data.transition === undefined) ? "slide" : event.data.transition;
-    var hash = (event.data.hash === undefined) ? true : event.data.hash;
+    var hash = (event.data.hash === undefined) ? false : event.data.hash;
     var reverse = (event.data.reverse === undefined) ? true : event.data.reverse;
     $.mobile.changePage(event.data.page, {
         transition: transition,
