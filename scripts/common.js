@@ -9,7 +9,7 @@ $(document).on('pagebeforeshow', '#saleOrderSelectCustomer',  function(){
     		transition: "slide",
     		changeHash: false,
     		reverse: false
-    	});
+    	});    
     	return false;
     }
 }); 
@@ -22,9 +22,10 @@ $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
     	});
     	return false;
     }
-    
     onResize();
     $(window).off('resize').on('resize', onResize);
+    var customers = Store.get("customers." + Store.get("user").Userid);
+    app.loadPage(customers);
     bindEvents();
     return false;
 
@@ -34,6 +35,25 @@ $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
     bindEvents();
     return false;
 }).delegate('#saleOrderEntry', 'pageshow', function() {
+	var selectedIndex = getObject(orders.pendingOrders,'selectedOrder',true);
+	var selectedOrder = orders.pendingOrders[selectedIndex].items;
+	$('#orderItems').children(".added").remove();  
+	var quantity;
+	$.each(selectedOrder,function(i,record){
+		node = $(".template:first",$("#orderItems")).clone().removeClass("template");
+        $(".productName",node).html(record.productName);
+        $(".category",node).html(record.category);
+        if(record.offerquantity == 0 || record.offerquantity == ''){
+        	quantity  = "Qty " + record.quantity;
+        }
+        else{
+        	quantity  = "Qty " + record.quantity + "/" + record.offerquantity;
+        }
+        $(".quantity",node).html(quantity);
+        $(".productId",node).val(record.productId);
+        $(node).addClass("added");
+        $(node).appendTo("#orderItems");
+	});
     onResize();
     $(window).off('resize').on('resize', onResize);
     bindEvents();
@@ -55,6 +75,17 @@ $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
     $(window).off('resize').on('resize', onResize);
     bindEvents();
     return false;
+}).delegate('#enterProducts', 'pagebeforeshow', function() {
+	var category = Store.get("category." + Store.get("user").Userid);
+	$("#category").html("");
+	$("<option>Category</option>").appendTo("#category");
+	$.each(category,function(i,data){
+		$("<option>"+data+"</option>").appendTo("#category");
+	});
+    onResize();
+    $(window).off('resize').on('resize', onResize);
+    bindEvents();
+    return false;
 });
 
 document.addEventListener("backbutton", function(e) {
@@ -70,10 +101,19 @@ document.addEventListener("backbutton", function(e) {
 document.addEventListener('deviceready', function(e) {
 }, false);
 
+function searchCustomer(){
+	var customers = Store.get("customers." + Store.get("user").Userid);
+	if($.trim($(this).val()).length == 0){
+		return false;
+	}
+	customers = getObjects(customers,'smStoreName',$(this).val());
+	app.loadPage(customers);
+}
 
 
 function bindEvents() {
-
+	$("#searchCustomer").off('keyup',searchCustomer).on('keyup',searchCustomer);
+	
     $(".ui-collapsible").off('tap', collapse).on('tap', collapse);
 
     $(".logout").unbind("click", navigate);
@@ -82,28 +122,20 @@ function bindEvents() {
     $(".home").unbind("tap");
     $(".home").bind("tap", {page: "#saleOrderSelectCustomer"}, navigate);
 
-    $(".customer").unbind('tap', navigate);
-    $(".customer").bind("tap", {page: "#saleOrderEntry"}, navigate);
-
     $(".addproduct").unbind('tap');
-    $(".addproduct").bind("tap", function() {
-       alert("ff");
-        try {
-             $("enterproducts.html").popup('open');
-        } catch (e) {
-            alert(e);
-        }
-        return false;
-    });
+    $(".addproduct").bind("tap", {page: "#enterProducts"}, orders.addProduct);
 
     $(".item").unbind('tap', navigate);
-    $(".item").bind("tap", {page: "#enterProducts", transition: "pop"}, navigate);
+    $(".item").bind("tap", {page: "#enterProducts", transition: "pop"}, orders.addProduct);
 
     $(".closebutton").unbind('tap', navigate);
     $(".closebutton").bind("tap", {page: "#saleOrderSelectCustomer"}, navigate);
 
-    $("#btnFinish").unbind('tap', navigate);
-    $("#btnFinish").bind("tap", {page: "#saleOrderEntry"}, navigate);
+    $("#btnFinish").unbind('tap', orders.finish);
+    $("#btnFinish").bind("tap", orders.finish);
+    
+    $("#btnAddNext").unbind('tap');
+    $("#btnAddNext").bind("tap", orders.addItem);
 
     $("#btnSave").unbind('tap', navigate);
     $("#btnSave").bind("tap", {page: "#savedOrder"}, navigate);
@@ -113,7 +145,10 @@ function bindEvents() {
 
     $(".orders").unbind('tap', navigate);
     $(".orders").bind("tap", {page: "#saleOrders"}, navigate);
-
+	
+	$("#category").unbind('change',orders.selectCategory).bind('change',orders.selectCategory);
+	
+	$("#product").unbind('keyup',orders.searchProduct).bind('keyup',orders.searchProduct);
 
 }
 

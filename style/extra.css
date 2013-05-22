@@ -32,3 +32,15 @@ root {
 .ui-page {
 -webkit-backface-visibility: hidden;
 }
+.template{
+	display:none;
+}
+
+.sub1, .sub2{
+	font-size:12px;
+	color:gray;
+}
+.sub2 {
+	text-transform:capitalize;
+}
+

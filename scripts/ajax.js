@@ -3,7 +3,7 @@ var url;
 
 $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
 	url = "http://www.getmyorder.in/index.php/ajax/";
-	//url = "http://localhost/projects/GetMyOrder/ajax.php?"; 
+	url = "http://localhost/projects/getmyorder.in/index.php/ajax/"; 
 	return false;
 });
 
@@ -25,28 +25,253 @@ var app = {
 		});
 	},
 	getAppData : function(){
-		$.getJSON(url+"customers", function(data) {
+		$.mobile.loadingMessage = "Customers";
+		$.mobile.showPageLoadingMsg();
+		var userid = Store.get("user").Userid;
+		$.getJSON(url+"customers",{ "userid" : userid }, function(data) {
+			$.each(data,function(i,record){
+				record.order = 0;
+			});
 			Store.set("customers." + Store.get("user").Userid, data,0);
 		}).done(function(){
+			$.mobile.loadingMessage = "Products";
+			$.mobile.showPageLoadingMsg();
 			$.getJSON(url+"products", function(data) {
 				Store.set("products." + Store.get("user").Userid, data,0);
 			}).done(function(){
-				app.loadPage();
+				var products = Store.get("products." + Store.get("user").Userid);
+				var category = getDistinct(products,'pmCategory');
+				Store.set("category." + Store.get("user").Userid, category,0);
+				$.mobile.loadingMessage = "Loading..";
+				$.mobile.showPageLoadingMsg();
+				app.changePage();
 				Store.set("appData." + Store.get("user").Userid,"1",0);
 			});
 		})
 	},
-	loadPage : function(){
+	changePage : function(){
 		$.mobile.changePage( "#saleOrderSelectCustomer", {
             transition: "slide",
             reverse: false,
             changeHash: false
         });
+        var customers = Store.get("customers." + Store.get("user").Userid);
+        app.loadPage(customers);
+	},
+	loadPage : function(customers){		
+        customers = sortByKey(customers, 'order');
+        var node;
+        var store;
+        var storename;
+        var location;
+        $('#searchResults').children(".added").remove();  
+        $.each(customers,function(i,record){
+        	if(i >= 10){
+        		return false;
+        	}
+        	store = (record.smStoreName).split("-");
+        	storename = record.smStoreName;
+        	location = record.smStoreName;
+        	if(typeof store[0] != "undefined"){
+        		storename = $.trim(store[0]);
+        	}
+        	if(typeof store[1] != "undefined"){
+        		location = $.trim(store[1]);
+        	}
+        	node = $(".template:first",$("#searchResults")).clone().removeClass("template");
+        	$(".storeName",node).html(storename);
+        	$(".storeCode",node).html("Code: " + record.smStoreCode);
+        	
+        	$(".location",node).html(location);
+        	$(".storeId",node).val(record.smId);
+        	$(node).addClass("added");
+        	$(node).appendTo("#searchResults");
+        });
+        $(".customer").unbind('tap', orders.selectCustomer);
+    	$(".customer").bind("tap", {page: "#saleOrderEntry"}, orders.selectCustomer);
        	$.mobile.hidePageLoadingMsg();
     	$("#txtUserName").val("");
     	$("#txtPassword").val("");
 	},
+	getData : function(){
+	
+	}
 }
+var orders = {
+	pendingOrders : [],
+	products : [],
+	selectCustomer : function(){
+		var storeId = $(this).find('input.storeId').val();
+		var storeName = $(this).find('strong.storeName').html();
+		var location = $(this).find('span.location').html();
+		var storeCode = $(this).find('span.storeCode').html();
+		
+		var order = {  'storeId' : storeId,
+						'storeName' : storeName,
+						'location' : location,
+						'storeCode' : storeCode,
+						'items' : []
+					}
+		var selectedIndex = getObject(orders.pendingOrders,'storeId',storeId);
+		if(!selectedIndex){
+			orders.pendingOrders.push(order);
+			selectedIndex = orders.pendingOrders.length - 1;
+		}
+		for(i in orders.pendingOrders){
+			orders.pendingOrders[i]['selectedOrder'] = false;
+			if(i == selectedIndex){
+				orders.pendingOrders[i]['selectedOrder'] = true;
+			}
+		}
+		
+		$("#saleOrderEntry").find('.storeId').val(storeId);
+		$("#saleOrderEntry").find('.storeName').html(storeName);
+		$("#saleOrderEntry").find('.location').html(location);
+		$("#saleOrderEntry").find('.storeCode').html(storeCode);
+		
+		$.mobile.changePage( "#saleOrderEntry", {
+            transition: "slide",
+            reverse: false,
+            changeHash: false
+        });
+        return false;
+	},
+	addProduct : function(){
+		if(typeof $(this).find(".productId").val() !== "undefined"){
+			var selectedIndex = getObject(orders.pendingOrders,'selectedOrder',true);
+			var selectedItem = getObject(orders.pendingOrders[selectedIndex].items,'productId',$(this).find(".productId").val()); 
+			var item = orders.pendingOrders[selectedIndex].items[selectedItem];
+			$.mobile.changePage( "#enterProducts", {
+            	transition: "slide",
+            	reverse: false,
+            	changeHash: false
+        	});
+			$("#enterProducts").find("#category").val(item.category).change();
+			$("#enterProducts").find("#productId").val(item.productId);
+			$("#enterProducts").find("#product").val(item.productName);
+			$("#enterProducts").find("#quantity").val(item.quantity);
+			$("#enterProducts").find("#offerquantity").val(item.offerquantity);
+		}else{
+			$.mobile.changePage( "#enterProducts", {
+            	transition: "slide",
+            	reverse: false,
+            	changeHash: false
+        	});
+        }
+        return false;
+	},
+	validateItem : function(){
+		if($("#category option:selected").text() == 'Category'){
+			throw "Invalid category";
+			return false;
+		}
+		if($.trim($("#product").val()) == ''){
+			throw "Invalid product";
+			return false;
+		}
+		if($("#productId").val() == '' && $.trim($("#product").val()) == ''){
+			throw "Product not selected";
+			return false;
+		}
+		if($.trim($("#quantity").val()) == '' || isNaN($.trim($("#quantity").val()))){
+			$("#quantity").val('');
+			throw "Product not selected";
+			return false;
+		}
+		if(isNaN($.trim($("#offerquantity").val()))){
+			$("#offerquantity").val('');
+			throw "Invalid offer quantity";
+			return false;
+		}
+	},
+	addItem : function(){
+		var selectedIndex = getObject(orders.pendingOrders,'selectedOrder',true);
+		var selectedItem = getObject(orders.pendingOrders[selectedIndex].items,'productId',$("#productId").val()); 
+		if(selectedItem){
+			orders.pendingOrders[selectedIndex].items.splice(selectedItem,1);
+		}
+		try{
+			orders.validateItem();
+			var item = { 'productId' : $("#productId").val(),
+					 'productName' : $("#product").val(),
+					 'category' : $("#category option:selected").text(),
+					 'quantity' : $("#quantity").val(),
+					 'offerquantity' : $("#offerquantity").val()		
+					};
+			orders.pendingOrders[selectedIndex].items.push(item);
+			$("#productId").val('');
+			$("#product").val('');
+			$("#category").val('Category').change();
+			$("#quantity").val('');
+			$("#offerquantity").val('');
+		}catch(e){
+			alert(e);
+			throw e;
+		}
+		
+		return false;
+	},
+	finish : function(){
+		try{
+			orders.addItem();
+			$.mobile.changePage( "#saleOrderEntry", {
+            	transition: "slide",
+            	reverse: false,
+            	changeHash: false
+        	});
+		}
+		catch(e){
+			return false;
+		}
+        return false;
+	},
+	saveOrder : function(){
+		
+	},
+	selectCategory : function(){
+		var categorySelected = $(this).find("option:selected").text();
+		if(categorySelected == "Category"){
+			orders.products = getObjects(Store.get("products." + Store.get("user").Userid),"pmCategory","");
+		}
+		else{
+			orders.products = getObjects(Store.get("products." + Store.get("user").Userid),"pmCategory",categorySelected,"exact");
+		}
+		return false;
+	},
+	searchProduct : function(){
+		if($.trim($(this).val()).length == 0){
+			return false;
+		}
+		var results = getObjects(orders.products,"pmProductName",$.trim($(this).val()));
+		var node;
+		$('#searchResultsProducts').children(".added").remove();
+		$.each(results,function(i,record){
+
+        	if(i >= 10){
+        		return false;
+        	}
+        	node = $(".template:first",$("#searchResultsProducts")).clone().removeClass("template");
+        	$(".productName",node).html(record.pmProductName);
+        	$(".productCode",node).html(record.pmProductCode);
+        	$(".productId",node).val(record.pmProductId);
+        	$(node).addClass("added");
+        	$(node).appendTo("#searchResultsProducts");
+        });
+        $(".products").unbind('tap', orders.selectProduct).bind('tap', orders.selectProduct);
+        return false;
+	},
+	selectProduct : function(){
+		var productId = $(this).find('input.productId').val();
+		var productName = $(this).find('strong.productName').html();
+		$("#product").val(productName);
+		$("#productId").val(productId);
+		$('#searchResultsProducts').children(".added").remove();
+		$(this).blur();
+		return false;
+	}
+	
+}
+//orders.pendingOrders = [];
 
 function onSuccess(data){
     if(data.Name != undefined){
@@ -70,6 +295,9 @@ function login() {
 		//navigator.notification.alert("Please Fill The Details Completely",callBack, 'Error');
     	return false;
     }
+    $.mobile.loadingMessageTextVisible = true;
+    $.mobile.loadingMessage = "Login";
+    $.mobile.loadingMessageTheme = "c";
     $.mobile.showPageLoadingMsg();
     $.ajax({
     	type: "POST",
@@ -85,8 +313,6 @@ function login() {
   	});
     return false;
 }
-
-
 
 
 function onerror(data){

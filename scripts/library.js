@@ -61,3 +61,80 @@ var Store = {
 };
 
 Store.appName = "GetMyOrder";
+
+function sortByKey(array, key) {
+    return array.sort(function(a, b) {
+        var x = a[key]; var y = b[key];
+        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    });
+}
+function getObjects(obj, key, val,matching) {
+	if(typeof matching == "undefined"){
+		matching = "similar";
+	}
+	if(typeof val == "string"){
+		val = val.toLowerCase();
+	}
+    var objects = [];
+    for (var i in obj) {
+        if (!obj.hasOwnProperty(i)) continue;
+        
+        if (typeof obj[i] == 'object') {
+            objects = objects.concat(getObjects(obj[i], key, val,matching));
+        } else{
+        	if(i !== key) continue;
+        	if(matching == "similar"){
+        		if((obj[key].toLowerCase()).indexOf(val) !== -1) {
+            		objects.push(obj);
+        		}
+        	}else{
+        		if(obj[key].toLowerCase() == val) {
+            		objects.push(obj);
+        		}
+        	}
+        }
+    }
+    return objects;
+}
+function getObject(obj, key, val){
+	if(typeof val == "string"){
+		val = val.toLowerCase();
+	}
+    for (var i in obj) {
+        if (!obj.hasOwnProperty(i)) continue;
+        if (typeof obj[i] == 'object') {
+        	for(var j in obj[i]){
+        		if(j !== key) continue;
+        		if(typeof obj[i][key] == "string"){
+					if(obj[i][key].toLowerCase() == val){
+            			return i;	
+            		}
+				}else{
+        			if(obj[i][key] == val){
+            			return i;	
+            		}
+            	}
+        	}
+        }
+    }
+    return false;
+}
+
+function getDistinct(obj,key){
+	var object = [];
+	$.each(obj, function(index, value) {
+    	if ($.inArray(value[key].toLowerCase(), object)==-1) {
+    	    object.push(value[key]);
+    	}
+	});
+	return object;
+}
+function removeElement(obj,key,val){
+	$.each(obj, function(index, value) {
+    	if (value[key] == val) {
+    	    delete obj[index];
+    	}
+	});
+	return obj;
+}
+
