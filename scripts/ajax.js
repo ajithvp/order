@@ -3,7 +3,7 @@ var url;
 
 $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
 	url = "http://www.getmyorder.in/index.php/ajax/";
-	url = "http://localhost/projects/getmyorder.in/index.php/ajax/"; 
+//	url = "http://localhost/projects/getmyorder.in/index.php/ajax/"; 
 	return false;
 });
 
