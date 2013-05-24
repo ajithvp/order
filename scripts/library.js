@@ -121,9 +121,10 @@ function getObject(obj, key, val){
 }
 
 function getDistinct(obj,key){
+
 	var object = [];
 	$.each(obj, function(index, value) {
-    	if ($.inArray(value[key].toLowerCase(), object)==-1) {
+    	if ($.inArray(value[key], object)==-1) {
     	    object.push(value[key]);
     	}
 	});

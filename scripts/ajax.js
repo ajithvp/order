@@ -3,7 +3,7 @@ var url;
 
 $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
 	url = "http://www.getmyorder.in/index.php/ajax/";
-//	url = "http://localhost/projects/getmyorder.in/index.php/ajax/"; 
+	//url = "http://localhost/projects/getmyorder.in/index.php/ajax/"; 
 	return false;
 });
 
@@ -19,7 +19,6 @@ var app = {
 		}
 	},
 	fetch : function (model){
-		alert(url+model);
 		$.getJSON(url+model, function(data) {
 			Store.set(model+"." + Store.get("user").Userid, data,0);
 		});
@@ -57,6 +56,7 @@ var app = {
         });
         var customers = Store.get("customers." + Store.get("user").Userid);
         app.loadPage(customers);
+        return false;
 	},
 	loadPage : function(customers){		
         customers = sortByKey(customers, 'order');
@@ -92,6 +92,7 @@ var app = {
        	$.mobile.hidePageLoadingMsg();
     	$("#txtUserName").val("");
     	$("#txtPassword").val("");
+    	return false;
 	},
 	getData : function(){
 	
