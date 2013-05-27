@@ -106,13 +106,10 @@ document.addEventListener('deviceready', function(e) {
 
 function searchCustomer(){
 	var customers = Store.get("customers." + Store.get("user").Userid);
-	alert(JSON.stringify(customers));
 	if($.trim($(this).val()).length == 0){
 		return false;
 	}
-	alert($(this).val());
 	customers = getObjects(customers,'smStoreName',$(this).val());
-	alert(JSON.stringify(customers));
 	app.loadPage(customers);
 }
 

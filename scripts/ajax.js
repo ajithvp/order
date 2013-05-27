@@ -55,6 +55,7 @@ var app = {
         var store;
         var storename;
         var location;
+        alert(JSON.stringify(customers));
         $('#ui-results').children(".added").remove();  
         $.each(customers,function(i,record){
         	if(i >= 10){
@@ -78,6 +79,7 @@ var app = {
         	$(node).addClass("added");
         	$(node).appendTo("#ui-results");
         });
+        alert(i);
         $(".customer").unbind('tap', orders.selectCustomer);
     	$(".customer").bind("tap", {page: "#saleOrderEntry"}, orders.selectCustomer);
        	$.mobile.hidePageLoadingMsg();
@@ -231,7 +233,7 @@ var orders = {
 		return false;
 	},
 	searchProduct : function(){
-	try{
+	
 		if($.trim($(this).val()).length == 0){
 			return false;
 		}
@@ -250,9 +252,7 @@ var orders = {
         	$(node).appendTo("#ui-results-products");
         });
         $(".products").unbind('tap', orders.selectProduct).bind('tap', orders.selectProduct);
-        }catch(e){
-        	alert(e);
-        }
+        
         return false;
 	},
 	selectProduct : function(){
