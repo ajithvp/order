@@ -79,7 +79,7 @@ var app = {
         	$(node).addClass("added");
         	$(node).appendTo("#ui-results");
         });
-        alert(i);
+        alert("i");
         $(".customer").unbind('tap', orders.selectCustomer);
     	$(".customer").bind("tap", {page: "#saleOrderEntry"}, orders.selectCustomer);
        	$.mobile.hidePageLoadingMsg();
