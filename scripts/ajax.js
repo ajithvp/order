@@ -231,6 +231,7 @@ var orders = {
 		return false;
 	},
 	searchProduct : function(){
+	try{
 		if($.trim($(this).val()).length == 0){
 			return false;
 		}
@@ -238,7 +239,6 @@ var orders = {
 		var node;
 		$('#ui-results-products').children(".added").remove();
 		$.each(results,function(i,record){
-
         	if(i >= 10){
         		return false;
         	}
@@ -250,6 +250,9 @@ var orders = {
         	$(node).appendTo("#ui-results-products");
         });
         $(".products").unbind('tap', orders.selectProduct).bind('tap', orders.selectProduct);
+        }catch(e){
+        	alert(e);
+        }
         return false;
 	},
 	selectProduct : function(){
