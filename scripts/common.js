@@ -2,8 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
- 
+var url;
 $(document).on('pagebeforeshow', '#saleOrderSelectCustomer',  function(){
+	url = "http://www.getmyorder.in/index.php/ajax/";
+	url = "http://localhost/projects/getmyorder.in/index.php/ajax/";
 	if(!Store.isSet("user")){
     	$.mobile.changePage("#login", {
     		transition: "slide",
@@ -14,6 +16,8 @@ $(document).on('pagebeforeshow', '#saleOrderSelectCustomer',  function(){
     }
 }); 
 $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
+	url = "http://www.getmyorder.in/index.php/ajax/";
+	url = "http://localhost/projects/getmyorder.in/index.php/ajax/"; 
    	if(!Store.isSet("user")){
     	$.mobile.changePage("#login", {
     		transition: "slide",
@@ -24,8 +28,7 @@ $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
     }
     onResize();
     $(window).off('resize').on('resize', onResize);
-    var customers = Store.get("customers." + Store.get("user").Userid);
-    app.loadPage(customers);
+    app.initialize();
     bindEvents();
     return false;
 
@@ -37,10 +40,10 @@ $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
 }).delegate('#saleOrderEntry', 'pageshow', function() {
 	var selectedIndex = getObject(orders.pendingOrders,'selectedOrder',true);
 	var selectedOrder = orders.pendingOrders[selectedIndex].items;
-	$('#orderItems').children(".added").remove();  
+	$('#ui-items').children(".added").remove();  
 	var quantity;
 	$.each(selectedOrder,function(i,record){
-		node = $(".template:first",$("#orderItems")).clone().removeClass("template");
+		node = $(".template",$("#ui-items")).clone().removeClass("template");
         $(".productName",node).html(record.productName);
         $(".category",node).html(record.category);
         if(record.offerquantity == 0 || record.offerquantity == ''){
@@ -52,7 +55,7 @@ $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
         $(".quantity",node).html(quantity);
         $(".productId",node).val(record.productId);
         $(node).addClass("added");
-        $(node).appendTo("#orderItems");
+        $(node).appendTo("#ui-items");
 	});
     onResize();
     $(window).off('resize').on('resize', onResize);

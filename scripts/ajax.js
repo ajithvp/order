@@ -1,13 +1,3 @@
-
-var url;
-
-$(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
-	url = "http://www.getmyorder.in/index.php/ajax/";
-	//url = "http://localhost/projects/getmyorder.in/index.php/ajax/"; 
-	return false;
-});
-
-
 var app = {
 	initialize : function (){
 		var self = this;
@@ -15,7 +5,8 @@ var app = {
 			this.getAppData();
 		}
 		else{
-			this.loadPage();
+			var customers = Store.get("customers." + Store.get("user").Userid);
+        	this.loadPage(customers);
 		}
 	},
 	fetch : function (model){
@@ -64,7 +55,7 @@ var app = {
         var store;
         var storename;
         var location;
-        $('#searchResults').children(".added").remove();  
+        $('#ui-results').children(".added").remove();  
         $.each(customers,function(i,record){
         	if(i >= 10){
         		return false;
@@ -78,14 +69,14 @@ var app = {
         	if(typeof store[1] != "undefined"){
         		location = $.trim(store[1]);
         	}
-        	node = $(".template:first",$("#searchResults")).clone().removeClass("template");
+        	node = $(".template",$("#ui-results")).clone().removeClass("template");
         	$(".storeName",node).html(storename);
         	$(".storeCode",node).html("Code: " + record.smStoreCode);
         	
         	$(".location",node).html(location);
         	$(".storeId",node).val(record.smId);
         	$(node).addClass("added");
-        	$(node).appendTo("#searchResults");
+        	$(node).appendTo("#ui-results");
         });
         $(".customer").unbind('tap', orders.selectCustomer);
     	$(".customer").bind("tap", {page: "#saleOrderEntry"}, orders.selectCustomer);
@@ -245,18 +236,18 @@ var orders = {
 		}
 		var results = getObjects(orders.products,"pmProductName",$.trim($(this).val()));
 		var node;
-		$('#searchResultsProducts').children(".added").remove();
+		$('#ui-results-products').children(".added").remove();
 		$.each(results,function(i,record){
 
         	if(i >= 10){
         		return false;
         	}
-        	node = $(".template:first",$("#searchResultsProducts")).clone().removeClass("template");
+        	node = $(".template:first",$("#ui-results-products")).clone().removeClass("template");
         	$(".productName",node).html(record.pmProductName);
         	$(".productCode",node).html(record.pmProductCode);
         	$(".productId",node).val(record.pmProductId);
         	$(node).addClass("added");
-        	$(node).appendTo("#searchResultsProducts");
+        	$(node).appendTo("#ui-results-products");
         });
         $(".products").unbind('tap', orders.selectProduct).bind('tap', orders.selectProduct);
         return false;
@@ -266,7 +257,7 @@ var orders = {
 		var productName = $(this).find('strong.productName').html();
 		$("#product").val(productName);
 		$("#productId").val(productId);
-		$('#searchResultsProducts').children(".added").remove();
+		$('#ui-results-products').children(".added").remove();
 		$(this).blur();
 		return false;
 	}
