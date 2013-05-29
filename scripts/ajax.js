@@ -77,7 +77,7 @@ var app = {
         	$(".storeId",node).val(record.smId);
         	$(node).addClass("added");
         	$(node).appendTo("#ui-results");
-        	alert($("#ui-results").html());
+        	$("#ui-results").show();
         });
         $(".customer").unbind('tap', orders.selectCustomer);
     	$(".customer").bind("tap", {page: "#saleOrderEntry"}, orders.selectCustomer);

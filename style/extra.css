@@ -22,12 +22,6 @@ root {
 .ui-listview li:last-child  {
  	border-bottom:1px solid #9FC5E7;
 }
-#searchResults{
-	bottom:59px;
-	overflow-y:scroll;
-	overflow-x:hidden;
-	height:100%;
-}
 
 .ui-page {
 -webkit-backface-visibility: hidden;
