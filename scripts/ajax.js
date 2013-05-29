@@ -55,7 +55,6 @@ var app = {
         var store;
         var storename;
         var location;
-        alert(JSON.stringify(customers));
         $('#ui-results').children(".added").remove();  
         $.each(customers,function(i,record){
         	if(i >= 10){
@@ -78,8 +77,8 @@ var app = {
         	$(".storeId",node).val(record.smId);
         	$(node).addClass("added");
         	$(node).appendTo("#ui-results");
+        	alert($("#ui-results").html());
         });
-        alert("i");
         $(".customer").unbind('tap', orders.selectCustomer);
     	$(".customer").bind("tap", {page: "#saleOrderEntry"}, orders.selectCustomer);
        	$.mobile.hidePageLoadingMsg();
