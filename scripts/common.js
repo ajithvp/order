@@ -7,7 +7,7 @@ var stayloggedin = 0;
 var editMode = true;
 $(document).on('pagebeforeshow', '#saleOrderSelectCustomer',  function(){
 	url = "http://www.getmyorder.in/index.php/ajax/";
-	url = "http://localhost/projects/getmyorder.in/index.php/ajax/";
+	//url = "http://localhost/projects/getmyorder.in/index.php/ajax/";
 	if(!Store.isSet("user")){
     	$.mobile.changePage("#login", {
     		transition: "slide",
@@ -19,7 +19,7 @@ $(document).on('pagebeforeshow', '#saleOrderSelectCustomer',  function(){
 }); 
 $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
 	url = "http://www.getmyorder.in/index.php/ajax/";
-	url = "http://localhost/projects/getmyorder.in/index.php/ajax/"; 
+	//url = "http://localhost/projects/getmyorder.in/index.php/ajax/"; 
    	if(!Store.isSet("user")){
     	$.mobile.changePage("#login", {
     		transition: "slide",
@@ -70,6 +70,7 @@ $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
     bindEvents();
     return false;
 }).delegate('#saleOrders', 'pageshow', function() {
+	alert("pageshow");
 	var orders = Store.get("order." + Store.get("user").Userid);
 	var totalOrders = 0;
 	var todaysOrders = 0;
@@ -77,9 +78,11 @@ $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
 	var orderNo = 0;
 	var today = Date.now();
 	$('#ui-orders').children(".added").remove();
-	
+	alert("remove");
 	if(orders){
+		alert("orders");
 		$.each(orders,function(i,record){
+			alert("loop");
 			totalOrders++;
 			if(Math.abs((today-record.date)/(60*60*24*1000)).toFixed(0)==0){
 				todaysOrders++;
@@ -99,6 +102,7 @@ $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
         	$(".serialNo",node).val(record.serialNo);
         	$(node).addClass("added");
         	$(node).appendTo("#ui-orders");
+        	alert("append");
 		});
 		$("#totalOrders").html("Total Orders : " + totalOrders);
 		$("#todaysOrders").html("Todays Orders : " + todaysOrders);
