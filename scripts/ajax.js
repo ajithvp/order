@@ -5,8 +5,8 @@ var app = {
 			this.getAppData();
 		}
 		else{
-			var customers = Store.get("customers." + Store.get("user").Userid);
-        	this.loadPage(customers);
+		//	var customers = Store.get("customers." + Store.get("user").Userid);
+        	this.changePage();
 		}
 	},
 	fetch : function (model){
@@ -43,7 +43,7 @@ var app = {
 		$.mobile.changePage( "#saleOrderSelectCustomer", {
             transition: "slide",
             reverse: false,
-            changeHash: false
+            changeHash: true
         });
         var customers = Store.get("customers." + Store.get("user").Userid);
         app.loadPage(customers);
@@ -71,7 +71,7 @@ var app = {
         	}
         	node = $(".template",$("#ui-results")).clone().removeClass("template");
         	$(".storeName",node).html(storename);
-        	$(".storeCode",node).html("Code: " + record.smStoreCode);
+        	$(".storeCode",node).html(record.smStoreCode);
         	
         	$(".location",node).html(location);
         	$(".storeId",node).val(record.smId);
@@ -86,14 +86,78 @@ var app = {
     	$("#txtPassword").val("");
     	return false;
 	},
-	getData : function(){
-	
+	postData : function(data,param,callback){
+		var temp = [];
+		if(Store.isSet(param + "." + Store.get("user").Userid)){
+			temp = Store.get(param + "." + Store.get("user").Userid);
+			Store.clear(param + "." + Store.get("user").Userid);
+		}
+		$.ajax({
+    		type: "POST",
+    		url: url + param,
+    		data: data,
+        	cache: false,
+        	dataType: "html",
+        	success: function(result){
+        		data['savedStatus'] = true;
+        		data['referenceNo'] = result;
+        		data['serialNo'] = temp.length;
+        		temp.push(data);
+ 	 			Store.set(param + "." + Store.get("user").Userid,temp,0);
+        		callback(result);
+        	},
+        	error: function(){
+        		data['savedStatus'] = false;
+        		data['serialNo'] = temp.length;
+        		temp.push(data);
+ 	 			Store.set(param + "." + Store.get("user").Userid,temp,0);
+        		callback(0);
+        	}
+  		});
 	}
+}
+function showNotice(param){
+	if(param != 0){
+		$("#savedOrder").find(".result").html("Successfully Saved");
+		$("#savedOrder").find(".reference").html("Order no. is " + param);
+	}else{
+		$("#savedOrder").find(".result").html("Saved Locally");
+		$("#savedOrder").find(".reference").html("");
+	}
+	$.mobile.changePage( "#savedOrder", {
+    	transition: "slide",
+        reverse: false,
+        changeHash: true
+    });
 }
 var orders = {
 	pendingOrders : [],
 	products : [],
+	savedOrders : [],
+	viewOrder : function(){
+		editMode = false;
+		var storeId = $(this).find('input.storeId').val();
+		var serialNo = $(this).find('input.serialNo').val();
+		var storeName = $(this).find('span.storeName').html();
+		var location = $(this).find('span.location').html();
+		var storeCode = $(this).find('span.storeCode').html();
+		$("#saleOrderEntry").find('.storeId').val(storeId);
+		$("#saleOrderEntry").find('.storeName').html(storeName);
+		$("#saleOrderEntry").find('.location').html(location);
+		$("#saleOrderEntry").find('.storeCode').html(storeCode);
+		
+		var temp = getObject(Store.get("order." + Store.get("user").Userid),"serialNo",serialNo);
+		orders.savedOrders = Store.get("order." + Store.get("user").Userid)[temp];
+		$.mobile.changePage( "#saleOrderEntry", {
+            transition: "slide",
+            reverse: true,
+            changeHash: true
+        });
+        return false;
+		
+	},
 	selectCustomer : function(){
+		editMode = true;
 		var storeId = $(this).find('input.storeId').val();
 		var storeName = $(this).find('strong.storeName').html();
 		var location = $(this).find('span.location').html();
@@ -124,8 +188,8 @@ var orders = {
 		
 		$.mobile.changePage( "#saleOrderEntry", {
             transition: "slide",
-            reverse: false,
-            changeHash: false
+            reverse: true,
+            changeHash: true
         });
         return false;
 	},
@@ -136,8 +200,8 @@ var orders = {
 			var item = orders.pendingOrders[selectedIndex].items[selectedItem];
 			$.mobile.changePage( "#enterProducts", {
             	transition: "slide",
-            	reverse: false,
-            	changeHash: false
+            	reverse: true,
+            	changeHash: true
         	});
 			$("#enterProducts").find("#category").val(item.category).change();
 			$("#enterProducts").find("#productId").val(item.productId);
@@ -147,8 +211,8 @@ var orders = {
 		}else{
 			$.mobile.changePage( "#enterProducts", {
             	transition: "slide",
-            	reverse: false,
-            	changeHash: false
+            	reverse: true,
+            	changeHash: true
         	});
         }
         return false;
@@ -210,7 +274,7 @@ var orders = {
 			$.mobile.changePage( "#saleOrderEntry", {
             	transition: "slide",
             	reverse: false,
-            	changeHash: false
+            	changeHash: true
         	});
 		}
 		catch(e){
@@ -219,7 +283,17 @@ var orders = {
         return false;
 	},
 	saveOrder : function(){
-		
+		var selectedIndex = getObject(orders.pendingOrders,'selectedOrder',true);
+		if(orders.pendingOrders[selectedIndex].items.length == 0){
+			alert("No item to save");
+			return false;
+		}
+		var selectedOrder = orders.pendingOrders[selectedIndex];
+		selectedOrder["date"] = Date.now();
+		delete selectedOrder["selectedOrder"];
+		app.postData(selectedOrder,"order",showNotice);
+		orders.pendingOrders.splice(selectedIndex,1);
+		return false;
 	},
 	selectCategory : function(){
 		var categorySelected = $(this).find("option:selected").text();
@@ -269,7 +343,7 @@ var orders = {
 
 function onSuccess(data){
     if(data.Name != undefined){
-    	Store.set("user",data,0);
+    	Store.set("user",data,stayloggedin);
     	app.initialize();      
     }
     else{

@@ -58,7 +58,7 @@
                                 <a class="customer ui-link-inherit">
                                     <strong class = "main storeName"></strong>
                                     <br/>
-                                    <span class = "sub1 storeCode" ></span>
+                                    <span class = "sub1" >Code:</span><span class = "sub1 storeCode" ></span>
                                     <span class = "sub2 location" ></span>
                                     <input type = "hidden" class = "hidden storeId" />
                                 </a>
@@ -133,10 +133,10 @@
                 </div>
                 <div class="ui-block-b">
                     <fieldset data-role="controlgroup" data-type="horizontal" data-role="fieldcontain">
-                        <input type="radio" name="stayloggedin" id="radio-choice-1" value="" checked="checked" />
-                        <label for="radio-choice-1">On</label>
-                        <input type="radio" name="stayloggedin" id="radio-choice-2" value=""  />
-                        <label for="radio-choice-2">Off</label>
+                        <input type="radio" name="stayloggedin" id="on" value="" checked="checked" />
+                        <label for="on">On</label>
+                        <input type="radio" name="stayloggedin" id="off" value=""  />
+                        <label for="off">Off</label>
                     </fieldset>
                 </div>
             </fieldset>
@@ -174,9 +174,9 @@
                     <div class="ui-btn-inner ui-li ui-corner-all">
                         <div class="ui-btn-text" style="text-align:center;">
                             <a  class="ui-link-inherit">
-                                <strong class="ui-title">Successfully saved</strong>
+                                <strong class="ui-title result" ></strong>
                                 <br/>
-                                <strong class="ui-title">OrderNo : 23244</strong>
+                                <strong class="ui-title reference"></strong>
                             </a>
                         </div>
 
@@ -265,7 +265,7 @@
                         <br/>
                         <span style="font-size:12px;" class = "storeCode" ></span>
                         <span class = "location" style="font-size:12px;" ></span>
-                        <input type = "hidden" class = "hidden storeId"  value="dddd"/>
+                        <input type = "hidden" class = "hidden storeId"  />
                     </a>
                 </div>
             </div>
@@ -282,19 +282,34 @@
                     <li class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-corner-all ui-btn-up-a template"  >
                         <div class="ui-btn-inner ui-li ui-corner-all">
                             <div class="ui-btn-text">
-                                <a  class="item ui-link-inherit">
+                                <a  class="viewItem editItem ui-link-inherit" >
                                     <strong class = "productName" ></strong>
                                     <br/>
                                     <span style="font-size:12px;color:gray;" class = "sub1 category" ></span>
                                     <span class = "sub2 quantity" ></span>
                                     <input type = "hidden" class = "hidden productId" />
                                 </a>
+                               
                             </div>
                             <span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span>
                         </div>
                     </li>
 
                 </ul>
+                <div data-role="popup" id="editItem">
+					<ul  class="ui-listview ui-listview-inset ui-corner-all ui-shadow">
+        				<li class="ui-li ui-li-divider ui-bar-c ui-first-child" ></li>
+        				<li class="ui-li ui-li-static ui-btn-up-a editEntry" >Edit Entry</li>
+        				<li class="ui-li ui-li-static ui-btn-up-a ui-last-child removeEntry" >Remove Entry</li>
+        				<input type = "hidden" class = "productId" />
+    				</ul>
+				</div>
+				<div data-role="popup" id="viewItem">
+					<ul  class="ui-listview ui-listview-inset ui-corner-all ui-shadow">
+        				<li class="ui-li ui-li-divider ui-bar-c ui-first-child" ></li>
+        				<li class="ui-li ui-li-static ui-btn-up-a ui-last-child" >View Entry</li>
+        			</ul>
+				</div>
             </div>
         </fieldset>
         <fieldset class="ui-grid-a">
@@ -346,16 +361,6 @@
             </ul>
         </div>
     </div>
-</div>
-
-
-
-<div data-role="page" id="editItem" data-theme="c">
-    <ul  class="ui-listview ui-listview-inset ui-corner-all ui-shadow">
-        <li class="ui-li ui-li-divider ui-bar-c ui-first-child">ABHRAKA BHASMAM 40 10gm</li>
-        <li class="ui-li ui-li-static ui-btn-up-a">Edit Entry</li>
-        <li class="ui-li ui-li-static ui-btn-up-a ui-last-child">Remove Entry</li>
-    </ul>
 </div>
 
 
@@ -439,10 +444,10 @@
                 <div class=" bar" style="text-align:center;">
                     <fieldset class="ui-grid-a">
                         <div class="ui-block-a">
-                            <span style="font-size:13px;">Total Orders : 3</span>
+                            <span style="font-size:13px;" id = "totalOrders" ></span>
                         </div>
                         <div class="ui-block-b">
-                            <span style="font-size:13px;">Todays Orders : 2</span>
+                            <span style="font-size:13px;" id = "todaysOrders" ></span>
                         </div>
                     </fieldset>
                 </div>
@@ -450,16 +455,20 @@
 
 
             <div id="orders" >
-                <ul class="ui-listview ui-listview-inset ui-corner-all " style="margin:0.1em;">
-                    <li class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-corner-all ui-btn-up-a"  >
+                <ul class="ui-listview ui-listview-inset ui-corner-all " id = "ui-orders">
+                    <li class="ui-btn ui-btn-icon-right ui-li-has-arrow ui-li ui-corner-all ui-btn-up-a template"  >
                         <div class="ui-btn-inner ui-li ui-corner-all">
                             <div class="ui-btn-text">
-                                <a  class="ui-link-inherit">
-                                    <strong style="">Order No : 1345</strong>
+                                <a  class="viewOrder ui-link-inherit ">
+                                    <span class = "orderno" style = "font-size:12px;" ></span>
                                     <br/>
-                                    <span style="font-size:12px;color:gray;">ABHRAKA BHASMAM 41 10gm ser g</span>
+                                    <span class = "storeName"  ></span>
                                     <br/>
-                                    <span style="font-size:12px;color:gray;">Bhasmams, Qty - 10/2</span>
+                                    <span class = "sub1" >Code:</span>
+                                    <span class = "sub1 storeCode" ></span>
+                                    <span class = "sub2 location" ></span>
+                                    <input type = "hidden" class = "hidden storeId" />
+                                    <input type = "hidden" class = "hidden serialNo" />
                                 </a>
                             </div>
                             <span class="ui-icon ui-icon-arrow-r ui-icon-shadow">&nbsp;</span>
