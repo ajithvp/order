@@ -11,7 +11,7 @@ var ordersSynced = 0;
 
 $(document).on('pagebeforeshow', '#saleOrderSelectCustomer',  function(){
 	url = "http://www.getmyorder.in/index.php/ajax/";
-	url = "http://localhost/projects/getmyorder.in/index.php/ajax/";
+	//url = "http://localhost/projects/getmyorder.in/index.php/ajax/";
 	if(!Store.isSet("user")){
     	$.mobile.changePage("#login", {
     		transition: "slide",
@@ -23,7 +23,7 @@ $(document).on('pagebeforeshow', '#saleOrderSelectCustomer',  function(){
 }); 
 $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
 	url = "http://www.getmyorder.in/index.php/ajax/";
-	url = "http://localhost/projects/getmyorder.in/index.php/ajax/"; 
+	//url = "http://localhost/projects/getmyorder.in/index.php/ajax/"; 
    	if(!Store.isSet("user")){
     	$.mobile.changePage("#login", {
     		transition: "slide",
