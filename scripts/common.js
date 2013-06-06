@@ -347,13 +347,16 @@ function onResize() {
         landscapeScreenHeight = $(window).height();
     }
     if ((window.orientation === 0 || window.orientation === 180) && ((window.innerHeight + tolerance) < portraitScreenHeight)) {
-        $("[data-role=footer]").hide();
+        //$("[data-role=footer]").hide();
+        $("[data-role=footer]").removeAttr("data-position");
     }
     else if ((window.innerHeight + tolerance) < landscapeScreenHeight) {
-        $("[data-role=footer]").hide();
+	    $("[data-role=footer]").removeAttr("data-position");
+        //$("[data-role=footer]").hide();
     }
     else {
-        $("[data-role=footer]").show();
+    	$("[data-role=footer]").attr("data-position","fixed");
+    //    $("[data-role=footer]").show();
     }
     $("#searchResults").height($(window).height() - $("#searchResults").offset().top - $("#footer").height() - 17);
     $(".ui-link-inherit").width($(window).width() - 100);
