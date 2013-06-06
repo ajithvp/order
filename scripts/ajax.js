@@ -2,21 +2,23 @@ var app = {
 	initialize : function (){
 		var self = this;
 		if(!Store.isSet("appData." + Store.get("user").Userid)){
-			this.getAppData();
+			this.getAppData(app.changePage);
 		}
 		else{
 		//	var customers = Store.get("customers." + Store.get("user").Userid);
         	this.changePage();
 		}
+		
 	},
 	fetch : function (model){
 		$.getJSON(url+model, function(data) {
 			Store.set(model+"." + Store.get("user").Userid, data,0);
 		});
 	},
-	getAppData : function(){
+	getAppData : function(callback){
 		$.mobile.loadingMessage = "Customers";
 		$.mobile.showPageLoadingMsg();
+		unBindEvents();
 		var userid = Store.get("user").Userid;
 		$.getJSON(url+"customers",{ "userid" : userid }, function(data) {
 			$.each(data,function(i,record){
@@ -33,9 +35,10 @@ var app = {
 				var category = getDistinct(products,'pmCategory');
 				Store.set("category." + Store.get("user").Userid, category,0);
 				$.mobile.loadingMessage = "Loading..";
+				bindEvents();
 				$.mobile.showPageLoadingMsg();
-				app.changePage();
 				Store.set("appData." + Store.get("user").Userid,"1",0);
+				callback();
 			});
 		})
 	},
@@ -87,6 +90,10 @@ var app = {
     	return false;
 	},
 	postData : function(data,param,callback){
+		$.mobile.loadingMessageTextVisible = true;
+		$.mobile.loadingMessage = "Sending..";
+		$.mobile.showPageLoadingMsg();
+		unBindEvents();
 		var temp = [];
 		if(Store.isSet(param + "." + Store.get("user").Userid)){
 			temp = Store.get(param + "." + Store.get("user").Userid);
@@ -99,19 +106,34 @@ var app = {
         	cache: false,
         	dataType: "html",
         	success: function(result){
-        		data['savedStatus'] = true;
+        		data['savedStatus'] = "true";
         		data['referenceNo'] = result;
-        		data['serialNo'] = temp.length;
+        		data['serialNo'] = temp.length + 1;
         		temp.push(data);
  	 			Store.set(param + "." + Store.get("user").Userid,temp,0);
         		callback(result);
+        		bindEvents();
+        		$.mobile.hidePageLoadingMsg();
         	},
         	error: function(){
-        		data['savedStatus'] = false;
-        		data['serialNo'] = temp.length;
+        		temp = sortByKey(temp,"serialNo");
+        		data['referenceNo'] = 0;
+        		data['savedStatus'] = "false";        		
+        		var isExisting = getObject(temp,"date",data['date']);
+        		if(isExisting){
+        			data['serialNo'] = temp[isExisting]['serialNo'];
+        			temp.splice(isExisting,1); 
+        		}else{
+        			if(typeof temp[temp.length-1] == "undefined")
+        				data['serialNo'] = temp.length + 1;
+        			else	
+        				data['serialNo'] = temp[temp.length-1]['serialNo'] + 1;
+        		}
         		temp.push(data);
  	 			Store.set(param + "." + Store.get("user").Userid,temp,0);
         		callback(0);
+        		bindEvents();
+        		$.mobile.hidePageLoadingMsg();
         	}
   		});
 	}
@@ -193,28 +215,66 @@ var orders = {
         });
         return false;
 	},
+	removeItem : function (){
+		var productId = $(this).parent().find(".productId").val();
+		var selectedIndex = getObject(orders.pendingOrders,'selectedOrder',true);
+		var selectedItem = getObject(orders.pendingOrders[selectedIndex].items,'productId',productId); 
+		orders.pendingOrders[selectedIndex].items.splice(selectedItem,1);
+		$('#editItem').popup("close");
+		$.each($("#ui-items").find("li"),function(i){
+			if($(this).find(".productId").val() == productId){
+				$(this).remove();	
+			}
+		});
+		return false;
+	},
 	addProduct : function(){
-		if(typeof $(this).find(".productId").val() !== "undefined"){
-			var selectedIndex = getObject(orders.pendingOrders,'selectedOrder',true);
-			var selectedItem = getObject(orders.pendingOrders[selectedIndex].items,'productId',$(this).find(".productId").val()); 
-			var item = orders.pendingOrders[selectedIndex].items[selectedItem];
+		$("#enterProducts").find("#category").val("Category").change();
+		$("#enterProducts").find("#productId").val("");
+		$("#enterProducts").find("#product").val("");
+		$("#enterProducts").find("#quantity").val("");
+		$("#enterProducts").find("#offerquantity").val("");	
+		if($(this).hasClass('addproduct')){
 			$.mobile.changePage( "#enterProducts", {
             	transition: "slide",
-            	reverse: true,
+            	reverse: false,
             	changeHash: true
         	});
-			$("#enterProducts").find("#category").val(item.category).change();
-			$("#enterProducts").find("#productId").val(item.productId);
-			$("#enterProducts").find("#product").val(item.productName);
-			$("#enterProducts").find("#quantity").val(item.quantity);
-			$("#enterProducts").find("#offerquantity").val(item.offerquantity);
 		}else{
-			$.mobile.changePage( "#enterProducts", {
-            	transition: "slide",
-            	reverse: true,
-            	changeHash: true
-        	});
-        }
+			if($(this).parent().find(".productId").val() !== "" ){
+			
+				var selectedIndex;
+				var selectedItem;
+				var item;
+				var productId = $(this).parent().find(".productId").val();
+				if(editMode){
+					selectedIndex = getObject(orders.pendingOrders,'selectedOrder',true);
+					selectedItem = getObject(orders.pendingOrders[selectedIndex].items,'productId',productId); 
+					item = orders.pendingOrders[selectedIndex].items[selectedItem];
+				}else{
+					selectedItem = getObject(orders.savedOrders.items,'productId',productId);
+					item = orders.savedOrders.items[selectedItem];
+				}
+				
+				$.mobile.changePage( "#enterProducts", {
+            		transition: "slide",
+            		reverse: true,
+            		changeHash: true
+        		});
+				$("#enterProducts").find("#category").val(item.category).change();
+				$("#enterProducts").find("#productId").val(item.productId);
+				$("#enterProducts").find("#product").val(item.productName);
+				$("#enterProducts").find("#quantity").val(item.quantity);
+				$("#enterProducts").find("#offerquantity").val(item.offerquantity);	
+			}else{
+				$.mobile.changePage( "#enterProducts", {
+            		transition: "slide",
+            		reverse: false,
+            		changeHash: true
+        		});
+        	}
+		}
+		
         return false;
 	},
 	validateItem : function(){

@@ -5,9 +5,13 @@
 var url;
 var stayloggedin = 0;
 var editMode = true;
+var ordersSaved = 0;
+var orderToSync = 0;
+var ordersSynced = 0;
+
 $(document).on('pagebeforeshow', '#saleOrderSelectCustomer',  function(){
 	url = "http://www.getmyorder.in/index.php/ajax/";
-	//url = "http://localhost/projects/getmyorder.in/index.php/ajax/";
+	url = "http://localhost/projects/getmyorder.in/index.php/ajax/";
 	if(!Store.isSet("user")){
     	$.mobile.changePage("#login", {
     		transition: "slide",
@@ -19,7 +23,7 @@ $(document).on('pagebeforeshow', '#saleOrderSelectCustomer',  function(){
 }); 
 $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
 	url = "http://www.getmyorder.in/index.php/ajax/";
-	//url = "http://localhost/projects/getmyorder.in/index.php/ajax/"; 
+	url = "http://localhost/projects/getmyorder.in/index.php/ajax/"; 
    	if(!Store.isSet("user")){
     	$.mobile.changePage("#login", {
     		transition: "slide",
@@ -70,7 +74,6 @@ $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
     bindEvents();
     return false;
 }).delegate('#saleOrders', 'pageshow', function() {
-	alert("pageshow");
 	var orders = Store.get("order." + Store.get("user").Userid);
 	var totalOrders = 0;
 	var todaysOrders = 0;
@@ -78,11 +81,8 @@ $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
 	var orderNo = 0;
 	var today = Date.now();
 	$('#ui-orders').children(".added").remove();
-	alert("remove");
 	if(orders){
-		alert("orders");
 		$.each(orders,function(i,record){
-			alert("loop");
 			totalOrders++;
 			if(Math.abs((today-record.date)/(60*60*24*1000)).toFixed(0)==0){
 				todaysOrders++;
@@ -102,11 +102,10 @@ $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
         	$(".serialNo",node).val(record.serialNo);
         	$(node).addClass("added");
         	$(node).appendTo("#ui-orders");
-        	alert("append");
 		});
-		$("#totalOrders").html("Total Orders : " + totalOrders);
-		$("#todaysOrders").html("Todays Orders : " + todaysOrders);
 	}
+	$("#totalOrders").html("Total Orders : " + totalOrders);
+	$("#todaysOrders").html("Todays Orders : " + todaysOrders);
     onResize();
     $(window).off('resize').on('resize', onResize);
     bindEvents();
@@ -118,9 +117,13 @@ $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
  			stayloggedin = 0;
  		}else{
  			stayloggedin = 1000;
- 		}
- 		
+ 		} 		
  	});
+    onResize();
+    $(window).off('resize').on('resize', onResize);
+    bindEvents();
+    return false;
+}).delegate('#settings', 'pageshow', function() {
     onResize();
     $(window).off('resize').on('resize', onResize);
     bindEvents();
@@ -137,24 +140,21 @@ $(document).delegate('#saleOrderSelectCustomer', 'pageinit', function() {
 	$.each(category,function(i,data){
 		$("<option>"+data+"</option>").appendTo("#category");
 	});
+	if(editMode){
+		$("#btnBack").closest("div").hide();
+		$("#btnAddNext").closest("div").show();
+		$("#btnFinish").closest("div").show();
+	}else{
+		$("#btnBack").closest("div").show();
+		$("#btnAddNext").closest("div").hide();
+		$("#btnFinish").closest("div").hide();	
+	}	
     onResize();
     $(window).off('resize').on('resize', onResize);
     bindEvents();
     return false;
 });
 
-document.addEventListener("backbutton", function(e) {
-	alert("back button");
-    if ($.mobile.activePage.is('#saleOrderSelectCustomer')) {
-        e.preventDefault();
-        navigator.app.exitApp();
-    } else {
-        navigator.app.backHistory();
-    }
-}, false);
-
-document.addEventListener('deviceready', function(e) {
-}, false);
 
 function searchCustomer(){
 	var customers = Store.get("customers." + Store.get("user").Userid);
@@ -163,38 +163,142 @@ function searchCustomer(){
 	}
 	customers = getObjects(customers,'smStoreName',$(this).val());
 	app.loadPage(customers);
+	return false;
+}
+function refreshAppData(){
+	$("#sure .sure-1").text("Are You Sure?");
+  	$("#sure .sure-2").text("Are you sure refresh application data?");	
+	$('#sure').popup("open");
+	$("#suredo").unbind("tap").bind("tap",function(){
+		Store.clear("appData." + Store.get("user").Userid);
+		Store.clear("customers." + Store.get("user").Userid);
+		Store.clear("category." + Store.get("user").Userid);
+		Store.clear("products." + Store.get("user").Userid);
+		app.getAppData(closePopUp);
+		return false;
+	});
+	return false;	
 }
 
+function syncOrders(){
+	ordersSaved = 0;
+	ordersSynced = 0;
+	var orders = Store.get("order." + Store.get("user").Userid);
+	var unSavedOrders = getObjects(orders,"savedStatus","false","exact");
+	orderToSync = unSavedOrders.length;
+	$.each(unSavedOrders,function(i,record){
+		delete record['referenceNo'];
+		delete record['savedStatus'];
+		delete record['serialNo'];
+		app.postData(record,"order",countSyncOrders);
+	})
+	return false;
+}
+
+function countSyncOrders(param){
+	ordersSynced++;
+	if(param != 0)
+		ordersSaved++;
+	if(ordersSynced == orderToSync){
+		alert("Saved " + ordersSaved + " Orders");
+	} 
+}
+
+function closePopUp(){
+	alert("Done");
+	$.mobile.hidePageLoadingMsg();
+	$('#sure').popup("close");
+}
+
+function unBindEvents(){
+	$(".back").unbind("tap");
+	
+	$("#refreshAppData").off('tap');
+	
+	$("#syncOrders").off('tap');
+	
+	$("#searchCustomer").off('keyup',searchCustomer);
+	
+    $(".ui-collapsible").off('tap', collapse);
+
+    $(".logout").unbind("tap", logout);
+    
+    $(".settings").unbind("tap");
+    
+    $("#btnCancel").unbind("tap");    
+
+    $(".home").unbind("tap");
+
+    $(".closebutton").unbind('tap', navigate);
+    
+    $("#btnBack").unbind('tap', navigate);
+
+    $(".viewOrder").unbind("tap",orders.viewOrder);
+	
+	$(".viewItem").unbind('tap',showViewPopUp);
+	$(".addproduct").unbind('tap');
+	$(".editItem").unbind('tap',showEditPopUp);
+	$("#removeEntry").unbind('tap');
+	$("#editEntry").unbind('tap');
+	$("#btnSave").unbind('tap', orders.saveOrder);
+	
+	
+    $("#btnFinish").unbind('tap', orders.finish);
+    
+    $("#btnAddNext").unbind('tap');
+
+    $("#btnNextOrder").unbind('tap', navigate);
+
+    $(".orders").unbind('tap', navigate);
+	
+	$("#category").unbind('change',orders.selectCategory);
+	
+	$("#product").unbind('keyup',orders.searchProduct);
+
+}
 
 function bindEvents() {
+	$(".back").unbind("tap").bind("tap", {page: "#saleOrderSelectCustomer"}, navigate);   
+	
+	$("#refreshAppData").off('tap').on('tap', refreshAppData);
+	
+	$("#syncOrders").off('tap').on('tap', syncOrders);
+	
 	$("#searchCustomer").off('keyup',searchCustomer).on('keyup',searchCustomer);
 	
     $(".ui-collapsible").off('tap', collapse).on('tap', collapse);
 
     $(".logout").unbind("tap", logout).bind("tap", logout);
     
+    $(".settings").unbind("tap").bind("tap", {page: "#settings"}, navigate);
+    
     $("#btnCancel").unbind("tap").bind("tap", {page: "#saleOrderSelectCustomer"}, navigate);    
 
     $(".home").unbind("tap").bind("tap", {page: "#saleOrderSelectCustomer"}, navigate);
 
     $(".closebutton").unbind('tap', navigate).bind("tap", {page: "#saleOrderSelectCustomer"}, navigate);
+    
+    $("#btnBack").unbind('tap', navigate).bind("tap", {page: "#saleOrderEntry"}, navigate);
 
     $(".viewOrder").unbind("tap",orders.viewOrder).bind("tap",orders.viewOrder);
 	if(editMode){
 		$(".viewItem").unbind('tap',showViewPopUp);
 		$(".addproduct").unbind('tap').bind("tap", {page: "#enterProducts"}, orders.addProduct);
 		$(".editItem").unbind('tap',showEditPopUp).bind('tap',showEditPopUp);
+		$("#removeEntry").unbind('tap').bind('tap',orders.removeItem);
+		$("#editEntry").unbind('tap').bind('tap',orders.addProduct);
+		$("#btnSave").unbind('tap', orders.saveOrder).bind("tap", orders.saveOrder);
 	}else{
 		$(".addproduct").unbind('tap');
 		$(".editItem").unbind('tap',showEditPopUp);
 		$(".viewItem").unbind('tap',showViewPopUp).bind('tap',showViewPopUp);
+		$("#btnSave").unbind('tap', orders.saveOrder);
+		$("#viewEntry").unbind('tap').bind('tap',orders.addProduct);
 	}
 	
     $("#btnFinish").unbind('tap', orders.finish).bind("tap", orders.finish);
     
     $("#btnAddNext").unbind('tap').bind("tap", orders.addItem);
-
-    $("#btnSave").unbind('tap', orders.saveOrder).bind("tap", orders.saveOrder);
 
     $("#btnNextOrder").unbind('tap', navigate).bind("tap", {page: "#saleOrderSelectCustomer"}, navigate);
 
@@ -212,18 +316,21 @@ function logout(){
         reverse: false,
         changeHash: false
     });
+    return false;
 }
 
 function showEditPopUp(){
 	$('#editItem').find(".ui-first-child").html($(this).find(".productName").html());
-	$('#editItem').find(".productId").html($(this).find(".productId").val());
+	$('#editItem').find(".productId").val($(this).find(".productId").val());
 	$('#editItem').popup("open");
+	return false;
 }
 
 function showViewPopUp(){
 	$('#viewItem').find(".ui-first-child").html($(this).find(".productName").html());
-	$('#viewItem').find(".productId").html($(this).find(".productId").val());
+	$('#viewItem').find(".productId").val($(this).find(".productId").val());
 	$('#viewItem').popup("open");
+	return false;
 }
 
 function onResize() {
@@ -279,4 +386,5 @@ function collapse() {
         $(this).find("span.ui-icon").addClass("ui-icon-plus");
         $(this).children("div.ui-collapsible-content").addClass("ui-collapsible-content-collapsed");
     }
+    return false;
 }

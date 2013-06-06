@@ -88,8 +88,10 @@ function getObjects(obj, key, val,matching) {
             		objects.push(obj);
         		}
         	}else{
-        		if(obj[key].toLowerCase() == val) {
-            		objects.push(obj);
+        		if(typeof obj[key] == "string"){
+        			if(obj[key].toLowerCase() === val ) {
+            			objects.push(obj);
+        			}
         		}
         	}
         }

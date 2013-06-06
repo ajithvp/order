@@ -37,6 +37,4 @@ root {
 .sub2 {
 	text-transform:capitalize;
 }
-.hidden{
-	display:none;
-}
+
